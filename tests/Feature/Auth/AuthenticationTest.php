@@ -39,3 +39,13 @@ test('users can logout', function () {
     $this->assertGuest();
     $response->assertRedirect('/');
 });
+
+test('register button redirects to register page', function () {
+    $response = $this->get('/login');
+
+    $response->assertSee('register');
+
+    $response = $this->get(route('register'));
+
+    $response->assertStatus(200);
+});

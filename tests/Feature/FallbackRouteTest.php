@@ -1,6 +1,6 @@
 <?php
 
-it('should redirect all unathenticated routes to the login page', function ($url) {
+test('should redirect all unathenticated routes to the login page', function ($url) {
     $response = $this->get($url);
 
     $response->assertStatus(302);
