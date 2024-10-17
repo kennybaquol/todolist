@@ -49,3 +49,13 @@ test('register button redirects to register page', function () {
 
     $response->assertStatus(200);
 });
+
+test('forgot password link redirects to forgot-password page', function () {
+    $response = $this->get('/login');
+
+    $response->assertSee('forgot-password');
+
+    $response = $this->get(route('password.request'));
+
+    $response->assertStatus(200);
+});
