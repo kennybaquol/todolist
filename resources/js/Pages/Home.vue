@@ -2,8 +2,18 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { nextTick } from 'vue'
 
 const checkboxes = ref([{ value: 0, checked: false }, { value: 1, checked: false }]);
+
+const changeFocus = async (index) => {
+    await nextTick();
+
+    const inputs = document.querySelectorAll('input[type="text"]');
+    if (inputs[index]) {
+        inputs[index].focus();
+    }
+}
 
 const addCheckbox = async (index) => {
     const newCheckbox = {
@@ -12,10 +22,14 @@ const addCheckbox = async (index) => {
     };
     
     checkboxes.value.splice(index + 1, 0, newCheckbox);
+    changeFocus(index + 1);
 }
 
-const deleteCheckbox = (checkboxId) => {
-    // this needs to be written
+const deleteCheckbox = (index, event) => {
+    if (event.target.value === '' && index > 0) {
+        checkboxes.value.splice(index, 1);
+        changeFocus(index - 1);
+    }
 }
 </script>
 
@@ -37,7 +51,13 @@ const deleteCheckbox = (checkboxId) => {
                           :key="checkbox" 
                           class="flex items-center space-x-2 mb-2"
                         >
-                            <input type="checkbox" class="w-6 h-6 m-2" v-model="checkbox.checked" :id="checkbox.value" />
+                            <input
+                                type="checkbox"
+                                class="w-6 h-6 m-2"
+                                v-model="checkbox.checked"
+                                :id="checkbox.value" 
+                                tabindex="-1"
+                            />
                             <span class="w-full" :class="{ 'line-through': checkbox.checked }" :for="checkbox.value">
                                 <input
                                     type="text"
@@ -45,6 +65,7 @@ const deleteCheckbox = (checkboxId) => {
                                     :class="{ 'line-through': checkbox.checked }"
                                     placeholder="edit me"
                                     @keydown.enter.prevent="addCheckbox(index)"
+                                    @keydown.backspace="deleteCheckbox(index, $event)"
                                 ></input>
                             </span>
                         </div>
