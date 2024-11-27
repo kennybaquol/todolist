@@ -29,8 +29,8 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink :href="route('home')" :active="route().current('home')">
-                                    Home
+                                <NavLink v-for="toDoList in $page.props.auth.toDoLists" :href="route('home')" :active="route().current('home')">
+                                    {{toDoList.name}}
                                 </NavLink>
                             </div>
                         </div>

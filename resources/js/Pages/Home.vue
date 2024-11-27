@@ -1,10 +1,12 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { nextTick } from 'vue'
+import { nextTick } from 'vue';
 
-const checkboxes = ref([{ value: 0, checked: false }, { value: 1, checked: false }]);
+// @todo: The [0] will need to be switched to the currently selected todolist
+const toDoList = usePage().props.auth.toDoLists[0];
+const items = ref(toDoList.items);
 
 const changeFocus = async (index) => {
     await nextTick();
@@ -15,19 +17,19 @@ const changeFocus = async (index) => {
     }
 }
 
-const addCheckbox = async (index) => {
-    const newCheckbox = {
-        value: checkboxes.value.length + 1,
+const addItem = async (index) => {
+    const newItem = {
+        value: items.value.length + 1,
         checked: false
     };
     
-    checkboxes.value.splice(index + 1, 0, newCheckbox);
+    items.value.splice(index + 1, 0, newItem);
     changeFocus(index + 1);
 }
 
-const deleteCheckbox = (index, event) => {
+const deleteItem = (index, event) => {
     if (event.target.value === '' && index > 0) {
-        checkboxes.value.splice(index, 1);
+        items.value.splice(index, 1);
         changeFocus(index - 1);
     }
 }
@@ -47,25 +49,25 @@ const deleteCheckbox = (index, event) => {
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
                         <div
-                          v-for="(checkbox, index) in checkboxes" 
-                          :key="checkbox" 
+                          v-for="(item, index) in items" 
+                          :key="item" 
                           class="flex items-center space-x-2 mb-2"
                         >
                             <input
                                 type="checkbox"
                                 class="w-6 h-6 m-2"
-                                v-model="checkbox.checked"
-                                :id="checkbox.value" 
+                                v-model="item.checked"
+                                :id="item.value" 
                                 tabindex="-1"
                             />
-                            <span class="w-full" :class="{ 'line-through': checkbox.checked }" :for="checkbox.value">
+                            <span class="w-full" :class="{ 'line-through': item.checked }" :for="item.value">
                                 <input
                                     type="text"
                                     class="w-full border-0 focus:ring-0"
-                                    :class="{ 'line-through': checkbox.checked }"
+                                    :class="{ 'line-through': item.checked }"
                                     placeholder="edit me"
-                                    @keydown.enter.prevent="addCheckbox(index)"
-                                    @keydown.backspace="deleteCheckbox(index, $event)"
+                                    @keydown.enter.prevent="addItem(index)"
+                                    @keydown.backspace="deleteItem(index, $event)"
                                 ></input>
                             </span>
                         </div>
