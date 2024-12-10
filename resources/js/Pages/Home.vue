@@ -4,9 +4,11 @@ import { Head, usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { nextTick } from 'vue';
 
-// @todo: The [0] will need to be switched to the currently selected todolist
-const toDoList = usePage().props.auth.toDoLists[0];
-const items = ref(toDoList.items);
+const toDoLists = usePage().props.auth.toDoLists;
+const mostRecentList = toDoLists.reduce((latest, current) => {
+    return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
+}, toDoLists[0]);
+const items = ref(mostRecentList.items);
 
 const changeFocus = async (index) => {
     await nextTick();

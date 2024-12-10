@@ -12,31 +12,19 @@ class ToDoList extends Model
     // Explicitly set the table name.
     protected $table = 'to_do_lists';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // The attributes that are mass assignable.
     protected $fillable = [
         'name',
         'items',
     ];
 
-    /**
-     * Default attributes.
-     *
-     * @var array<string, mixed>
-     */
+    // Default attributes
     protected $attributes = [
         'name' => 'New To-Do List',
         'items' => '[{"value": 0, "checked": false}]',
     ];
 
-    /**
-     * Casts attributes to the appropriate data type.
-     *
-     * @var array<string, string>
-     */
+    // Casts attributes to the appropriate data type.
     protected $casts = [
         'items' => 'array',
     ];
