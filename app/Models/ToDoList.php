@@ -21,7 +21,7 @@ class ToDoList extends Model
     // Default attributes
     protected $attributes = [
         'name' => 'New To-Do List',
-        'items' => '[{"value": 0, "checked": false}]',
+        'items' => '[{"value": 0, "text": "", "checked": false}]',
     ];
 
     // Casts attributes to the appropriate data type.

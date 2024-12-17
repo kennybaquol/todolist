@@ -5,9 +5,14 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
+
+const toDoLists = usePage().props.auth.toDoLists;
+const mostRecentList = toDoLists.reduce((latest, current) => {
+    return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
+}, toDoLists[0]);
 </script>
 
 <template>
@@ -29,9 +34,10 @@ const showingNavigationDropdown = ref(false);
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink v-for="toDoList in $page.props.auth.toDoLists" :href="route('home')" :active="route().current('home')">
-                                    {{toDoList.name}}
-                                </NavLink>
+                            <NavLink v-for="toDoList in $page.props.auth.toDoLists" :key="toDoList.id" 
+                                    :href="route('home')" :active="mostRecentList.id === toDoList.id">
+                                {{ toDoList.name }}
+                            </NavLink>
                             </div>
                         </div>
 

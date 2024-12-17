@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('to_do_lists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->json('items')->default(json_encode([['value' => 0, 'checked' => false]]));
+            $table->json('items')->default(json_encode([['value' => 0, 'text' => '', 'checked' => false]]));
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
