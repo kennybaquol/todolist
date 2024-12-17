@@ -1,27 +1,30 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { router, Head, usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
-import { nextTick } from 'vue';
+import { ref, nextTick, watch } from 'vue';
 
 const toDoLists = usePage().props.auth.toDoLists;
 const mostRecentList = toDoLists.reduce((latest, current) => {
     return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
 }, toDoLists[0]);
 const items = ref(mostRecentList.items);
+const headerName = ref(mostRecentList.name);
 
 let saveTimeout = null;
 
 const saveToDoList = () => {
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
-        router.patch(`/todolists/${mostRecentList.id}`, { items: items.value }, {
+        router.patch(`/todolists/${mostRecentList.id}`, { 
+            items: items.value,
+            name: headerName.value,
+        }, {
             onError: (error) => { 
                 console.error('Failed to save ToDoList: ', error);
-             },
+            },
         });
     }, 1500); // 1.5 seconds debounce
-};
+}
 
 const changeFocus = async (index) => {
     await nextTick();
@@ -36,7 +39,7 @@ const addItem = async (index) => {
     const newItem = {
         value: items.value.length + 1,
         text: '',
-        checked: false
+        checked: false,
     }
 
     items.value.splice(index + 1, 0, newItem);
@@ -50,7 +53,12 @@ const deleteItem = (index, event) => {
         saveToDoList();
         changeFocus(index - 1);
     }
-};
+}
+
+// Watch for changes to headerName and debounce save
+watch(headerName, () => {
+    saveToDoList();
+});
 </script>
 
 <template>    
@@ -58,7 +66,14 @@ const deleteItem = (index, event) => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Home</h2>
+            <div>
+                <input
+                    type="text"
+                    v-model="headerName"
+                    class="font-semibold text-xl text-gray-800 leading-tight w-full border-0 focus:ring-0"
+                    placeholder="edit me"
+                />
+            </div>
         </template>
 
         <div class="py-12">
@@ -87,7 +102,7 @@ const deleteItem = (index, event) => {
                                     @input="saveToDoList"
                                     @keydown.enter.prevent="addItem(index)"
                                     @keydown.backspace="deleteItem(index, $event)"
-                                ></input>
+                                />
                             </span>
                         </div>
                     </div>
