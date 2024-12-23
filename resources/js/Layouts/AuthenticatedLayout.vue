@@ -34,10 +34,21 @@ const mostRecentList = toDoLists.reduce((latest, current) => {
 
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                            <NavLink v-for="toDoList in $page.props.auth.toDoLists" :key="toDoList.id" 
-                                    :href="route('home')" :active="mostRecentList.id === toDoList.id">
-                                {{ toDoList.name }}
-                            </NavLink>
+                                <NavLink
+                                    v-for="toDoList in $page.props.auth.toDoLists" 
+                                    :key="toDoList.id" 
+                                    :href="route('home')" 
+                                    :active="mostRecentList.id === toDoList.id"
+                                    >
+                                    {{ toDoList.name }}
+                                </NavLink>
+                                <NavLink
+                                    :href="route('todolist.store')"
+                                    method="post"
+                                    as="button"
+                                >
+                                    Add New +
+                                </NavLink>
                             </div>
                         </div>
 
