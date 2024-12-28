@@ -7,9 +7,10 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
-class ToDoListController extends Controller
+class HomeController extends Controller
 {
-    public function access(Request $request, $id)
+
+    public function index(Request $request, $id)
     {
         $user = $request->user();
 
@@ -21,21 +22,5 @@ class ToDoListController extends Controller
             'currentToDoList' => $toDoList,
             'toDoLists' => $user->toDoLists,  // All ToDoLists for navigation or other purposes
         ]);
-    }
-
-    public function store(Request $request)
-    {
-        $request->user()->toDoLists()->create();
-    }
-
-    public function update(Request $request, $id)
-    {
-        $toDoList = ToDoList::where('id', $id)
-                            ->where('user_id', $request->user()->id)
-                            ->firstOrFail(); // Ensures it exists and belongs to the user
-
-        $toDoList->fill($request->all());
-
-        $toDoList->save();
     }
 }

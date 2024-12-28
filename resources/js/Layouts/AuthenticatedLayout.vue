@@ -10,9 +10,14 @@ import { Link, usePage } from '@inertiajs/vue3';
 const showingNavigationDropdown = ref(false);
 
 const toDoLists = usePage().props.auth.toDoLists;
-const mostRecentList = toDoLists.reduce((latest, current) => {
-    return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
-}, toDoLists[0]);
+let currentToDoList = usePage().props.currentToDoList;
+
+// Display the most recently modified list by default
+if (!currentToDoList) {
+    currentToDoList = toDoLists.reduce((latest, current) => {
+        return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
+    }, toDoLists[0]);
+}
 </script>
 
 <template>
@@ -25,7 +30,7 @@ const mostRecentList = toDoLists.reduce((latest, current) => {
                         <div class="flex">
                             <!-- Logo -->
                             <div class="shrink-0 flex items-center">
-                                <Link :href="route('home')">
+                                <Link :href="route('todolist.access', { id: currentToDoList.id })">
                                     <ApplicationLogo
                                         class="block h-9 w-auto fill-current text-gray-800"
                                     />
@@ -37,8 +42,8 @@ const mostRecentList = toDoLists.reduce((latest, current) => {
                                 <NavLink
                                     v-for="toDoList in $page.props.auth.toDoLists" 
                                     :key="toDoList.id" 
-                                    :href="route('home')" 
-                                    :active="mostRecentList.id === toDoList.id"
+                                    :href="route('todolist.access', { id: toDoList.id })" 
+                                    :active="currentToDoList.id === toDoList.id"
                                     >
                                     {{ toDoList.name }}
                                 </NavLink>
@@ -128,11 +133,11 @@ const mostRecentList = toDoLists.reduce((latest, current) => {
                     :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }"
                     class="sm:hidden"
                 >
-                    <div class="pt-2 pb-3 space-y-1">
-                        <ResponsiveNavLink :href="route('home')" :active="route().current('home')">
-                            Home
+                    <!-- <div class="pt-2 pb-3 space-y-1">
+                        <ResponsiveNavLink :href="route('todolist.access', { id: currentToDoList.id })" :active="route().current('home')">
+                            @todo: Mobile support will have list of all todolists go here
                         </ResponsiveNavLink>
-                    </div>
+                    </div> -->
 
                     <!-- Responsive Settings Options -->
                     <div class="pt-4 pb-1 border-t border-gray-200">

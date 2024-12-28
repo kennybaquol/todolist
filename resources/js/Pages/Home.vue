@@ -4,18 +4,24 @@ import { router, Head, usePage } from '@inertiajs/vue3';
 import { ref, nextTick, watch } from 'vue';
 
 const toDoLists = usePage().props.auth.toDoLists;
-const mostRecentList = toDoLists.reduce((latest, current) => {
-    return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
-}, toDoLists[0]);
-const items = ref(mostRecentList.items);
-const headerName = ref(mostRecentList.name);
+let currentToDoList = usePage().props.currentToDoList;
+
+// Display the most recently modified list by default
+if (!currentToDoList) {
+    currentToDoList = toDoLists.reduce((latest, current) => {
+        return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
+    }, toDoLists[0]);
+}
+
+const items = ref(currentToDoList.items);
+const headerName = ref(currentToDoList.name);
 
 let saveTimeout = null;
 
 const saveToDoList = () => {
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
-        router.patch(`/todolists/${mostRecentList.id}`, { 
+        router.patch(`/todolists/${currentToDoList.id}`, { 
             items: items.value,
             name: headerName.value,
         }, {
@@ -23,13 +29,14 @@ const saveToDoList = () => {
                 console.error('Failed to save ToDoList: ', error);
             },
         });
-    }, 1500); // 1.5 seconds debounce
+    }, 1000); // 1 second debounce
 }
 
 const changeFocus = async (index) => {
     await nextTick();
 
-    const inputs = document.querySelectorAll('input[type="text"]');
+    const inputs = document.querySelectorAll('.p-6 input[type="text"]');
+    console.log(inputs)
     if (inputs[index]) {
         inputs[index].focus();
     }
