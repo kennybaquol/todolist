@@ -1,28 +1,63 @@
 <script setup>
-import { ref } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import Modal from '@/Components/Modal.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import { router, Link, usePage } from '@inertiajs/vue3';
+import { nextTick, ref } from 'vue';
 
 const showingNavigationDropdown = ref(false);
+const confirmingToDoListDeletion = ref(false);
 
-const toDoLists = usePage().props.auth.toDoLists;
+let toDoLists = usePage().props.auth.toDoLists;
 let currentToDoList = usePage().props.currentToDoList;
 
-// Display the most recently modified list by default
 if (!currentToDoList) {
     currentToDoList = toDoLists.reduce((latest, current) => {
         return new Date(current.updated_at) > new Date(latest.updated_at) ? current : latest;
     }, toDoLists[0]);
 }
+
+const addToDoList = () => {
+    router.post('/todolists', {}, {
+        onSuccess: () => {
+            router.get('/home');
+        },
+        onError: (error) => { 
+            console.error('Failed to add ToDoList: ', error);
+        },
+    });
+}
+
+const confirmToDoListDeletion = () => {
+    confirmingToDoListDeletion.value = true;
+};
+
+const closeModal = () => {
+    confirmingToDoListDeletion.value = false;
+};
+
+const deleteToDoList = () => {
+    router.delete(`/todolists/${currentToDoList.id}`, {
+        onSuccess: () => {
+            closeModal();
+            router.get('/home');
+        },
+        onError: (error) => { 
+            console.error('Failed to delete ToDoList: ', error);
+        },
+    });
+};
+
 </script>
 
 <template>
     <div>
-        <div class="min-h-screen bg-gradient-to-r from-sky-400">
+        <div class="min-h-screen bg-gradient-to-r from-sky-400 to-sky-200">
             <nav class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,13 +82,18 @@ if (!currentToDoList) {
                                     >
                                     {{ toDoList.name }}
                                 </NavLink>
-                                <NavLink
-                                    :href="route('todolist.store')"
-                                    method="post"
+                                <!-- @todo: See if we can get this to work as a NavLink button via as -->
+                                <!-- <NavLink
+                                    @click="addToDoList"
                                     as="button"
                                 >
                                     Add New +
-                                </NavLink>
+                                </NavLink> -->
+                                <button
+                                    @click="addToDoList"
+                                >
+                                    Add New +
+                                </button>
                             </div>
                         </div>
 
@@ -160,9 +200,37 @@ if (!currentToDoList) {
 
             <!-- Page Heading -->
             <header class="bg-white shadow" v-if="$slots.header">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex">
                     <slot name="header" />
+                  <button
+                    class="text-red-500 hover:text-red-700 ml-auto"
+                    @click="confirmToDoListDeletion">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2M10 11v6m4-6v6m-7 4h10a2 2 0 002-2V7H5v12a2 2 0 002 2z" />
+                    </svg>
+                  </button>
                 </div>
+
+                <section class="space-y-6">
+                    <Modal :show="confirmingToDoListDeletion" @close="closeModal">
+                        <div class="p-6">
+                            <h2 class="text-lg font-medium text-gray-900">
+                                Are you sure you want to delete {{ currentToDoList.name }}?
+                            </h2>
+
+                            <div class="mt-6 flex justify-end">
+                                <SecondaryButton @click="closeModal"> Cancel </SecondaryButton>
+
+                                <DangerButton
+                                    class="ms-3"
+                                    @click="deleteToDoList"
+                                >
+                                    Delete Account
+                                </DangerButton>
+                            </div>
+                        </div>
+                    </Modal>
+                </section>
             </header>
 
             <!-- Page Content -->
