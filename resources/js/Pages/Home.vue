@@ -78,7 +78,7 @@ watch(headerName, () => {
                     type="text"
                     v-model="headerName"
                     class="font-semibold text-xl text-gray-800 leading-tight w-full border-0 focus:ring-0"
-                    placeholder="edit me"
+                    placeholder="Edit me"
                 />
             </div>
         </template>
@@ -105,7 +105,7 @@ watch(headerName, () => {
                                     class="w-full border-0 focus:ring-0"
                                     :class="{ 'line-through': item.checked }"
                                     v-model="item.text"
-                                    placeholder="edit me"
+                                    placeholder="Edit me"
                                     @input="saveToDoList"
                                     @keydown.enter.prevent="addItem(index)"
                                     @keydown.backspace="deleteItem(index, $event)"
