@@ -215,7 +215,7 @@ const deleteToDoList = () => {
                     <Modal :show="confirmingToDoListDeletion" @close="closeModal">
                         <div class="p-6">
                             <h2 class="text-lg font-medium text-gray-900">
-                                Are you sure you want to delete {{ currentToDoList.name }}?
+                                Are you sure you want to delete this to-do list?
                             </h2>
 
                             <div class="mt-6 flex justify-end">
@@ -225,7 +225,7 @@ const deleteToDoList = () => {
                                     class="ms-3"
                                     @click="deleteToDoList"
                                 >
-                                    Delete Account
+                                    Delete To-Do List
                                 </DangerButton>
                             </div>
                         </div>
