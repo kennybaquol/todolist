@@ -5,7 +5,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, router } from '@inertiajs/vue3';
 
 defineProps({
     canResetPassword: {
@@ -26,6 +26,10 @@ const submit = () => {
     form.post(route('login'), {
         onFinish: () => form.reset('password'),
     });
+};
+
+const navigateToRegister = () => {
+    router.visit(route('register'));
 };
 </script>
 
@@ -89,7 +93,7 @@ const submit = () => {
                     Log in
                 </PrimaryButton>
 
-                <PrimaryButton class="ms-4">
+                <PrimaryButton class="ms-4" @keydown.enter.prevent="navigateToRegister">
                     <Link :href="route('register')">
                         Register
                     </Link>
