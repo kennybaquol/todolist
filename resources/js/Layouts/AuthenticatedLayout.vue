@@ -204,7 +204,9 @@ const deleteToDoList = () => {
                     <slot name="header" />
                   <button
                     class="text-red-500 hover:text-red-700 ml-auto"
-                    @click="confirmToDoListDeletion">
+                    @click="confirmToDoListDeletion"
+                    v-if="toDoLists.length > 1"
+                    >
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 6h18M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2M10 11v6m4-6v6m-7 4h10a2 2 0 002-2V7H5v12a2 2 0 002 2z" />
                     </svg>
@@ -224,6 +226,7 @@ const deleteToDoList = () => {
                                 <DangerButton
                                     class="ms-3"
                                     @click="deleteToDoList"
+                                    :disabled="toDoLists.length <= 1"
                                 >
                                     Delete To-Do List
                                 </DangerButton>
