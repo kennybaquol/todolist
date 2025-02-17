@@ -21,9 +21,10 @@ let saveTimeout = null;
 const saveToDoList = () => {
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
+        const newName = headerName.value || 'Edit me';
         router.patch(`/todolists/${currentToDoList.id}`, { 
             items: items.value,
-            name: headerName.value,
+            name: newName,
         }, {
             onError: (error) => { 
                 console.error('Failed to save ToDoList: ', error);
