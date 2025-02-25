@@ -21,9 +21,10 @@ let saveTimeout = null;
 const saveToDoList = () => {
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
+        const newName = headerName.value || 'Edit me';
         router.patch(`/todolists/${currentToDoList.id}`, { 
             items: items.value,
-            name: headerName.value,
+            name: newName,
         }, {
             onError: (error) => { 
                 console.error('Failed to save ToDoList: ', error);
@@ -98,6 +99,7 @@ watch(headerName, () => {
                                 v-model="item.checked"
                                 :id="item.value"
                                 tabindex="-1"
+                                @change="saveToDoList"
                             />
                             <span class="w-full" :class="{ 'line-through': item.checked }" :for="item.value">
                                 <input
