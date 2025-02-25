@@ -99,6 +99,7 @@ watch(headerName, () => {
                                 v-model="item.checked"
                                 :id="item.value"
                                 tabindex="-1"
+                                @change="saveToDoList"
                             />
                             <span class="w-full" :class="{ 'line-through': item.checked }" :for="item.value">
                                 <input
